@@ -1,30 +1,72 @@
 var express = require('express');
 var app = express();
-var bodyParser = require('body-parser')
+var router = express.Router();
+var path = __dirname + '/pages/';
 
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+// Login data
+loginUser = 'teszt';
+loginPasswd = 'elek';
 
-app.get('/', function(req, res){
-	var obj = { "Adat":"van", "Igaz":"Talán" };
-	obj.title = 'title';
-	obj.data = 'data';
-	
-	console.log('params: ' + JSON.stringify(req.params));
-	console.log('body: ' + JSON.stringify(req.body));
-	console.log('query: ' + JSON.stringify(req.query));
-	console.log(obj);
-	
-	res.header('Content-type','application/json');
-	res.header('Charset','utf8');
-	res.send(req.query.callback + '('+ JSON.stringify(obj) + ');');
+var bodyParser = require('body-parser');
+app.use( bodyParser.json() );       // to support JSON-encoded bodies
+app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+    extended: true
+}));
+
+router.use(function (req, res, next) {
+  console.log("/" + req.method);
+  next();
 });
 
-app.post('/', function(req, res){
-	var obj = {};
-	console.log('body: ' + JSON.stringify(req.body));
-	res.send(req.body);
+// Index = /
+router.get("/",function(req,res){
+  res.sendFile(path + "index.html");
 });
 
+// Login = /login
+router.get("/login",function(req,res){
+  res.sendFile(path + "login.html");
+});
 
-app.listen(3000);
+// Register = /register
+router.get("/register", function(req,res){
+  res.sendFile(path + "register.html");
+});
+
+// Login
+app.post('/login', function (req, res) {
+  var post = req.body;
+  console.log("post data: "+post.user);
+  console.log(post);
+  if (post.user === loginUser && post.password === loginPasswd) {
+    // req.session.user_id = user_id;
+    res.redirect('/');
+  } else {
+    res.send('Rossz felhasználónév/jelszó');
+  }
+});
+
+// Registration
+app.post('/reg', function (req, res) {
+  var post = req.body;
+  console.log(post);
+  dataUsername = post.user;
+  dataPasswd = post.password;
+  dataEmail = post.email;
+  dataConfEmail = post. confEmail;
+  if (post.email === post.confEmail) {
+    console.log("Username: "+dataUsername);
+    console.log("Password: "+dataPasswd);
+    console.log("E-mail: "+dataEmail);
+    res.send('Sikeres regisztráció!');
+  } else {
+    console.log("E-mail address error!");
+    res.send('Nem egyezik az e-mail cím!');
+  }
+});
+
+app.use("/", router);
+
+app.listen(3000,function(){
+  console.log("A szerver működik, a 3000-es porton figyel");
+});
