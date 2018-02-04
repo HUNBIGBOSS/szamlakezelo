@@ -19,17 +19,17 @@ router.use(function (req, res, next) {
 });
 
 // Index = /
-router.get("/",function(req,res){
+router.get("/", function (req, res){
   res.sendFile(path + "index.html");
 });
 
 // Login = /login
-router.get("/login",function(req,res){
+router.get("/login", function (req, res){
   res.sendFile(path + "login.html");
 });
 
 // Register = /register
-router.get("/register", function(req,res){
+router.get("/register", function (req, res){
   res.sendFile(path + "register.html");
 });
 
@@ -42,7 +42,7 @@ app.post('/login', function (req, res) {
     // req.session.user_id = user_id;
     res.redirect('/');
   } else {
-    res.send('Rossz felhasználónév/jelszó');
+    res.send('Helytelen felhasználónév vagy jelszó!');
   }
 });
 
@@ -67,6 +67,6 @@ app.post('/reg', function (req, res) {
 
 app.use("/", router);
 
-app.listen(3000,function(){
+app.listen(3000, function(){
   console.log("A szerver működik, a 3000-es porton figyel");
 });
