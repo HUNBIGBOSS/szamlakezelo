@@ -2,6 +2,13 @@ var express = require('express');
 var app = express();
 var router = express.Router();
 var path = __dirname + '/pages/';
+var mysql = require('mysql');
+var connection = mysql.createConnection({
+	host : 'localhost',
+	user : 'root',
+	password : 'qwert',
+	database : 'szamlak'
+});
 
 // Login data
 loginUser = 'teszt';
@@ -63,6 +70,25 @@ app.post('/reg', function (req, res) {
     console.log("E-mail address error!");
     res.send('Nem egyezik az e-mail cím!');
   }
+});
+
+// Database
+connection.connect(function(err) {
+	if (err) throw err
+	console.log('Az adatbázis csatlakoztatva van')
+
+connection.query('CREATE TABLE users(id int not null primary key auto_increment, name varchar(50), password varchar(20))', function(err, result) {
+if (err) throw err
+	connection.query('INSERT INTO users (name, password) VALUES (?, ?)', ['Teszt', 'Elek'], function(err, result) {
+	if (err) throw err
+		connection.query('SELECT * FROM users', function(err, results) {
+		if (err) throw err
+		console.log("User ID: " + results[0].id)
+		console.log("Username: " + results[0].name)
+		console.log("Password: " + results[0].password)
+			})
+		})
+	})
 });
 
 app.use("/", router);
