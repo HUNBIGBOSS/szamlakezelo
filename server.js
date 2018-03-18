@@ -1,4 +1,5 @@
 var express = require("express");
+var path = __dirname + '/pages/';
 var login = require('./routes/loginroutes');
 var bodypars = require('body-parser');
 
@@ -13,12 +14,13 @@ liveApp.use(function(datarequest, dataresults, next) {
 });
 var router = express.Router();
 
-router.get('/', function(datarequest, dataresults) {
+router.get("/", function(datarequest, dataresults) {
+	res.sendFile(path + "index.html");
 	dataresults.json({ message: 'Teszt'
 });
 });
 
-router.post('/register',login.register);
-router.post('/login',login.login);
-liveApp.use('/api', router);
+router.post("/register",login.register);
+router.post("/login",login.login);
+liveApp.use("/api", router);
 liveApp.listen(3000);
