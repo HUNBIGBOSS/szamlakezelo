@@ -6,7 +6,7 @@ var mysql = require('mysql');
 var connection = mysql.createConnection({
 	host : 'localhost',
 	user : 'root',
-	password : 'qwert',
+	password : 'root',
 	database : 'szamlak'
 });
 
@@ -77,14 +77,7 @@ connection.connect(function(err) {
 	if (err) throw err
 	console.log('Az adatbázis csatlakoztatva van')
 
-try {
-connection.query('SELECT * FROM users', function(err, results) {
-	if (err) throw err
-	console.log("User ID: " + results[0].id)
-})
-
-	} catch (err) {
-	connection.query('CREATE TABLE users(id int not null primary key auto_increment, name varchar(50), password varchar(20))', function(err, result) {
+connection.query('CREATE TABLE users(id int not null primary key auto_increment, name varchar(50), password varchar(20))', function(err, result) {
 if (err) throw err
 	connection.query('INSERT INTO users (name, password) VALUES (?, ?)', ['Teszt', 'Elek'], function(err, result) {
 	if (err) throw err
@@ -97,7 +90,6 @@ if (err) throw err
 			})
 		})
 	})
-	}
 });
 
 app.use("/", router);
