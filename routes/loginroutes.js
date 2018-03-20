@@ -1,70 +1,76 @@
-var mysql = require('mysql');
-var db_connect = mysql.createConnection({
-	host	: 'localhost',
-	user	: 'root',
-	password: 'root',
-	database: 'szamlakezelo'
+var mysql      = require('mysql');
+var connection = mysql.createConnection({
+  host     : '127.0.0.1',
+  user     : 'root',
+  password : 'root',
+  database : 'szamlakezelo',
+  insecureAuth : true
 });
-db_connect.connect(function(err) {
+connection.connect(function(err){
 if(!err) {
-	console.log("Az adatbázis csatlakoztatva van!");
+    console.log("Database is connected ... nn");
 } else {
-	console.log("Hiba az adatbázishoz való csatlakozás közben.");
+    console.log("Error connecting database ... nn", err);
 }
 });
-//REGISTER
-exports.register = function(datarequest,dataresults) {
-	var user={
-		"email":datarequest.body.email,
-		"password":datarequest.body.password
-	}
-db_connect.query('INSERT INTO users SET?',user, function(error, response, fields) {
-	if (error) {
-		console.log("Hiba történt a regisztráció során!", error);
-		dataresults.send({
-			"Kód":400,
-			"Sikertelen":"Hiba történt!"
-		})
-	} else {
-		console.log('Valami: ', response);
-		dataresults.send({
-			"Kód":200,
-			"Siker":"Sikeres regisztráció!"
-		});
-	}
-	});
+
+exports.register = function(req,res){
+  // console.log("req",req.body);
+  var users={
+    "email":req.body.email,
+    "password":req.body.password
+  }
+  connection.query('INSERT INTO felhasznalok SET ?',users, function (error, results, fields) {
+  if (error) {
+    console.log("error ocurred",error);
+    res.send({
+      "code":400,
+      "failed":"error ocurred"
+    })
+  }else{
+    console.log('The solution is: ', results);
+    res.send({
+      "code":200,
+      "success":"user registered sucessfully"
+        });
+  }
+  });
 }
-//LOGIN
-exports.login = function(datarequest,dataresults) {
-	var email = datarequest.body.email;
-	var password = datarequest.body.password;
-	db_connectquery('SELECT * FROM users WHERE email = ?',[email], function (error, response, fields) {
-	if (error) {
-		dataresults.send({
-			"Kód":400,
-			"Sikertelen":"Hiba történt!"
-		})
-	} else {
-		if(response.length > 0) {
-			if([0].password == password) {
-				dataresults.send({
-					"Kód":200,
-					"Siker":"Sikeres belépés!"
-				});
-			}
-			else {
-				dataresults.send({
-					"Kód":204,
-					"Sikertelen":"Az e-mail cím és jelszó nem egyezik!"
-				});
-			}
-		}
-		else {
-			dataresults.send({
-				"Kód":204,
-				"Sikertelen":"A megadott email cím nem létezik!"
-				});
-			}
-		}
-	});
+
+exports.login = function(req,res){
+  var email= req.body.email;
+  var password = req.body.password;
+  connection.query('SELECT * FROM felhasznalok WHERE email = ?',[email], function (error, results, fields) {
+  if (error) {
+    console.log("error ocurred",error);
+    res.send({
+      "code":400,
+      "failed":"error ocurred"
+    })
+  }else{
+    console.log('The solution is: ', results);
+    if(results.length > 0){
+      if(results[0].password == password){
+        res.send({
+          "code":200,
+          "success":"login sucessfull"
+            });
+      }
+      else{
+        res.send({
+          "code":204,
+          "success":"Email and password does not match",
+          "error": error
+            });
+      }
+    }
+    else{
+      res.send({
+        "code":204,
+        "success":"Email does not exits",
+        "error": error
+          });
+    }
+  }
+  });
 }
