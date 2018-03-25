@@ -8,23 +8,15 @@ exports.signup = function(req, res){
       var email = post.email;
       var pass = post.password;
       var pass2 = post.password2;
-      function checkEmail(theForm) {
-    if (theForm.pass.value != theForm.pass2.value)
-    {
-      message = "A jelszavak nem egyeznek!";
-      res.render('signup.ejs',{message: message});
-    } else {
-        return true;
-    }
-}
-	if (email == undefined || name == undefined || pass == undefined || pass2 == undefined) {
+	if (email === '' || name === '' || pass === '' || pass2 === '') {
 		message = "Nem hagyhat üresen mezőt!";
 		res.render('signup.ejs', {message: message});
-	} else {
-      var sql = "INSERT INTO `felhasznalok`(email, username, password) VALUES ('" + email + "', '" + name + "','" + pass + "')";
-
-         db.query(sql, function(err, result) {
-	 console.log("Új felhasználó lett regisztrálva! Adatok: " + result[0].id);
+	} else if (pass != pass2){ 
+		message = "A jelszavak nem egyeznek!";
+		res.render('signup.ejs', {message: message});
+		} else {
+         db.query("INSERT INTO felhasznalok (email, username, password) VALUES (?, ?, ?)", [email, name, pass], function(err, result) {
+	 console.log("Új felhasználó lett regisztrálva! Adatok: " + result[0]);
          message = "Siker! A fiókja létre lett hozva!";
          res.render('signup.ejs',{message: message});
       });
@@ -49,7 +41,7 @@ exports.login = function(req, res){
          if(results.length){
             req.session.userId = results[0].user_id;
             req.session.user = results[0];
-            console.log(results[0].id);
+            console.log(results[0].user_id);
             res.redirect('/home/dashboard');
          }
          else{
