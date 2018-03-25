@@ -1,7 +1,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Regisztráció</title>
+    <title>Sample Site</title>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css"/>
    <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
     
@@ -24,11 +24,16 @@
                                     <p>Hiba:</p>
                                     <span></span>
                                 </div>
-                                    
                                 <div class="form-group">
-                                    <label for="user_name" class="col-md-3 control-label">Felhasználónév</label>
+                                    <label for="email" class="col-md-3 control-label">Email-cím</label>
                                     <div class="col-md-9">
-                                        <input type="text" class="form-control" name="user_name" placeholder="Felhasználónév">
+                                        <input type="email" class="form-control" name="email" placeholder="Email">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="username" class="col-md-3 control-label">Felhasználónév</label>
+                                    <div class="col-md-9">
+                                        <input type="text" class="form-control" name="username" placeholder="Felhasználónév">
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -37,7 +42,12 @@
                                         <input type="password" class="form-control" name="password" placeholder="Jelszó">
                                     </div>
                                 </div>
- 
+                                <div class="form-group">
+                                    <label for="password" class="col-md-3 control-label">Jelszó újra</label>
+                                    <div class="col-md-9">
+                                        <input type="password" class="form-control" name="password2" placeholder="Jelszó újra">
+                                    </div>
+                                </div>
                                 <div class="form-group">
                                     <!-- Button -->                                       
                                     <div class="col-md-offset-3 col-md-9">
@@ -45,10 +55,18 @@
                                         
                                     </div>
                                 </div>
+                               
+                                
+                                
+                                
                             </form>
                          </div>
-                    </div>    
+                    </div>
+              
+                
          </div>
     </div>
+   
 </body>
 </html>
+ 
