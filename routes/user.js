@@ -39,13 +39,11 @@ exports.login = function(req, res){
       var post  = req.body;
       var name= post.username;
       var pass= post.password;
-     
-      var sql="SELECT user_id, username FROM `felhasznalok` WHERE username='"+name+"' and password = '"+pass+"'";                           
-      db.query(sql, function(err, results){      
+      db.query("SELECT * FROM felhasznalok WHERE username = ? AND password = ?", [name, pass], function(err, results){      
          if(results.length){
             req.session.userId = results[0].user_id;
             req.session.user = results[0];
-            console.log(results[0].user_id);
+            console.log(results[0].user_id + ". ID-vel rendelkező felhasználó bejelentkezett!");
             res.redirect('/home/dashboard');
          }
          else{
@@ -60,26 +58,25 @@ exports.login = function(req, res){
            
 };
 //-----------------------------------------------dashboard page functionality----------------------------------------------
-           
+ 
 exports.dashboard = function(req, res, next){
-           
    var user =  req.session.user,
    userId = req.session.user_id;
-   console.log('ddd='+userId);
-   if(userId == null){
-      res.redirect("/login");
-      return;
-   }
-
-   var sql="SELECT * FROM `felhasznalok` WHERE user_id='"+userId+"'";
-
-   db.query(sql, function(err, results){
-      res.render('dashboard.ejs', {user:user});    
-   });       
+   db.query("SELECT * FROM felhasznalok WHERE user_id = ?", [userId], function(err, results) {
+	//if (userId == null) {
+	//	res.redirect("/login");
+	//} else {
+	if (err) throw err;
+	res.render('dashboard.ejs', {user:user});
+	console.log('ddd='+userId);
+	});
+ //};
 };
 //------------------------------------logout functionality----------------------------------------------
 exports.logout=function(req,res){
+   var logoutId = req.session.user_id;
    req.session.destroy(function(err) {
+      console.log("A " + logoutId + "-s ID-vel rendelkező felhasználó kijelentkezett!");
       res.redirect("/login");
    })
 };
