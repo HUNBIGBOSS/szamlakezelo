@@ -15,15 +15,27 @@ exports.signup = function(req, res, result){
 		message = "A jelszavak nem egyeznek!";
 		res.render('signup.ejs', {message: message});
 		} else {
+			db.query("SELECT email FROM felhasznalok", function(err, results) {
+			var hossz = results.length;
+			var emails = [];
+			for (var x in results) {
+				emails.push(results[x].email);
+			}
+			if (emails.indexOf(email) > -1) {
+					message = "Ezzel az email címmel már regisztráltak!";
+					res.render('signup.ejs', {message: message});
+					} else {
          db.query("INSERT INTO felhasznalok (email, username, password) VALUES (?, ?, ?)", [email, name, pass], function(err, result) {
 	 if (err) throw err;
 	 db.query("SELECT * FROM felhasznalok WHERE email = ?", [email], function (err, result) {
 	 if (err) throw err;
-	 console.log("Új felhasználó lett regisztrálva! Adatok: " + result[0]);
+	 console.log("Új felhasználó lett regisztrálva! Adatok: " + result[0].email);
          message = "Siker! A fiókja létre lett hozva!";
          res.render('signup.ejs',{message: message});
 		});
 	});
+					}
+			});
 	}
    } else {
       res.render('signup');
