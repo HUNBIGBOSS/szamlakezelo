@@ -45,7 +45,10 @@ app.get('/login', routes.index);//call for login page
 app.post('/login', user.login);//call for login post
 app.get('/home/dashboard', user.dashboard);//call for dashboard page after login
 app.get('/home/logout', user.logout);//call for logout
-app.get('/home/profile',user.profile);//to render users profile
+app.get('/home/profile', user.profile);//to render users profile
+app.post('/home/profile', user.profile)
+app.get('/home/create', user.create);
+app.post('/home/create', user.create);
 //Middleware
 app.listen(3000, function(err) {
 	if (err) throw err

@@ -3,10 +3,18 @@
    <%- include header %>
    <!-- Main component for a primary marketing message or call to action -->
       <div class="jumbotron">
-        <h1>Welcome</h1>
-        <p>Hello Dashboard</p>
-        <p>
-          <a class="btn btn-lg btn-primary" href="#" role="button">Profile view »</a>
-        </p>
+        <h3>Felhasználói adatok</h3>
+        <form id="profileform" role="form" action="/profile" method="post">
+        <input type="text" name="veznev" id="veznev">
+        <input type="text" name="kernev" id="kernev">
+        <label for="nem"></label>
+        <select name="nem">
+          <option value="f">Nő</option>
+          <option value="m">Férfi</option>
+        </select>
+        <label for="age">Kor</label>
+        <input name="age" type="number" min="14" max="99">
+        <button id="btn-submit" type="submit" class="btn btn-success">Változtatások mentése</button>
+        </form>
       </div>
     <%- include footer %>

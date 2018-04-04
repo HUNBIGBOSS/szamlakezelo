@@ -1,6 +1,6 @@
 
 //---------------------------------------------signup page call------------------------------------------------------
-exports.signup = function(req, res, result){
+exports.signup = function(req, res){
    message = '';
    if(req.method == "POST"){
       var post  = req.body;
@@ -28,12 +28,15 @@ exports.signup = function(req, res, result){
          db.query("INSERT INTO felhasznalok (email, username, password) VALUES (?, ?, ?)", [email, name, pass], function(err, result) {
 	 if (err) throw err;
 	 db.query("SELECT * FROM felhasznalok WHERE email = ?", [email], function (err, result) {
+      var userid = result[0].user_id
 	 if (err) throw err;
 	 console.log("Új felhasználó lett regisztrálva! Adatok: " + result[0].email);
+         db.query("INSERT INTO user_szamla_kapcs (user_id) VALUES (?)", [userid], function(err, result) {
          message = "Siker! A fiókja létre lett hozva!";
          res.render('signup.ejs',{message: message});
 		});
 	});
+    });
 					}
 			});
 	}
@@ -87,8 +90,8 @@ exports.dashboard = function(req, res, next){
 //------------------------------------logout functionality----------------------------------------------
 exports.logout=function(req,res){
    var logoutId = req.session.user_id;
+   console.log("A " + logoutId + "-s ID-vel rendelkező felhasználó kijelentkezett!");
    req.session.destroy(function(err) {
-      console.log("A " + logoutId + "-s ID-vel rendelkező felhasználó kijelentkezett!");
       res.redirect("/login");
    })
 };
@@ -118,4 +121,29 @@ exports.editprofile=function(req,res){
    db.query(sql, function(err, results){
       res.render('edit_profile.ejs',{data:results});
    });
+};
+//--------------------------------create new bill--------------------------------------------------
+exports.create=function(req, res) {
+	if(req.method == "POST"){
+      message = '';
+      var post = req.body;
+      var nev;
+      var kelte;
+      var sorszam = req.sorszam;
+      var szallitonev = req.szallitonev;
+      var szallitocim = req.szallitocim;
+      var szallitoadoszam = req.szallitoadoszam;
+      var szallitoszamlaszam = req.szallitoszamlaszam;
+      var vevonev = req.vevonev;
+      var vevocim = req.vevocim;
+      var vevoadoszam = req.vevoadoszam;
+      var vevoszamlaszam = req.vevoszamlaszam;
+      var fizmod = req.fizmod;
+      var teljdatum = req.teljdatum;
+      var keltedatum = req.keltedatum;
+      var esedekesseg = req.esedekesseg;
+      
+   } else {
+      res.render('create');
+   }
 };
