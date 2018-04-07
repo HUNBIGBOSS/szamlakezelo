@@ -1,5 +1,5 @@
 /**
-* Module dependencies.
+* Modul függőségek
 */
 var express = require('express')
   , routes = require('./routes')
@@ -22,7 +22,7 @@ connection.connect();
  
 global.db = connection;
  
-// all environments
+// egységes környezet
 app.set('port', process.env.PORT || 3000);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
@@ -33,10 +33,10 @@ app.use(session({
               secret: 'Teszt Elek',
               resave: false,
               saveUninitialized: true,
-              cookie: { maxAge: 60000 }
+              cookie: { maxAge: 600000 }
             }))
  
-// development only
+//elérési útvonalak
  
 app.get('/', routes.index);//call for main index page
 app.get('/signup', user.signup);//call for signup page
@@ -46,9 +46,9 @@ app.post('/login', user.login);//call for login post
 app.get('/home/dashboard', user.dashboard);//call for dashboard page after login
 app.get('/home/logout', user.logout);//call for logout
 app.get('/home/profile', user.profile);//to render users profile
-app.post('/home/profile', user.profile)
+app.post('/home/profile', user.profile);
 app.get('/home/create', user.create);
-app.post('/home/create', user.create);
+app.post('/create', user.create);
 //Middleware
 app.listen(3000, function(err) {
 	if (err) throw err

@@ -30,35 +30,31 @@ exports.signup = function(req, res){
 	 db.query("SELECT * FROM felhasznalok WHERE email = ?", [email], function (err, result) {
       var userid = result[0].user_id
 	 if (err) throw err;
-	 console.log("Új felhasználó lett regisztrálva! Adatok: " + result[0].email);
-         db.query("INSERT INTO user_szamla_kapcs (user_id) VALUES (?)", [userid], function(err, result) {
+	 console.log("Új felhasználó lett regisztrálva! E-mail címe: " + result[0].email);
          message = "Siker! A fiókja létre lett hozva!";
          res.render('signup.ejs',{message: message});
-		});
-	});
-    });
-					}
+		          });
+	           });
+			   }
 			});
 	}
    } else {
       res.render('signup');
    }
 };
- 
 //-----------------------------------------------login page call------------------------------------------------------
 exports.login = function(req, res){
    var message = '';
    var sess = req.session; 
-
    if(req.method == "POST"){
       var post  = req.body;
       var name= post.username;
       var pass= post.password;
-      db.query("SELECT * FROM felhasznalok WHERE username = ? AND password = ?", [name, pass], function(err, results){      
+      db.query("SELECT user_id, email, username, password FROM felhasznalok WHERE username = ? AND password = ?", [name, pass], function(err, results){      
          if(results.length){
             req.session.userId = results[0].user_id;
             req.session.user = results[0];
-            console.log(results[0].user_id + ". ID-vel rendelkező felhasználó bejelentkezett!");
+            console.log("A(z) " + results[0].user_id + ". ID-vel rendelkező felhasználó bejelentkezett!");
             res.redirect('/home/dashboard');
          }
          else{
@@ -68,82 +64,129 @@ exports.login = function(req, res){
                  
       });
    } else {
-      res.render('index.ejs',{message: message});
+      res.render('login.ejs',{message: message});
    }
-           
 };
 //-----------------------------------------------dashboard page functionality----------------------------------------------
  
 exports.dashboard = function(req, res, next){
-   var user =  req.session.user,
-   userId = req.session.user_id;
+   var user =  req.session.user;
+   if (user === undefined) {
+      res.redirect("/login");
+   }
+   var userId = req.session.user.user_id;
+   var username = req.session.user.username;
    db.query("SELECT * FROM felhasznalok WHERE user_id = ?", [userId], function(err, results) {
-	//if (userId == null) {
-	//	res.redirect("/login");
-	//} else {
+	if (userId == null || userId == undefined) {
+	res.redirect("/login");
+	} else {
 	if (err) throw err;
-	res.render('dashboard.ejs', {user:user});
-	console.log('ddd='+userId);
-	});
- //};
+	res.render('dashboard.ejs', {user:user, username:username});
+	};
+ });
 };
 //------------------------------------logout functionality----------------------------------------------
-exports.logout=function(req,res){
-   var logoutId = req.session.user_id;
-   console.log("A " + logoutId + "-s ID-vel rendelkező felhasználó kijelentkezett!");
+exports.logout=function(req, res){
+   var user = req.session.user;
+   if (user === undefined) {
+      res.redirect("/login");
+   }
+   var logoutId = req.session.user.user_id;
+   console.log("A(z) " + logoutId + ". ID-vel rendelkező felhasználó kijelentkezett!");
    req.session.destroy(function(err) {
       res.redirect("/login");
    })
 };
-//--------------------------------render user details after login--------------------------------
-exports.profile = function(req, res){
-
-   var userId = req.session.userId;
+//--------------------------------modify user details after login--------------------------------
+exports.profile = function(req, res, next){
+   var user =  req.session.user;
+   if (user === undefined) {
+      res.redirect("/login");
+   }
+   var userId = req.session.user.user_id;
+   var username = req.session.user.username;
    if(userId == null){
       res.redirect("/login");
       return;
-   }
-
-   var sql="SELECT * FROM `felhasznalok` WHERE user_id='"+userId+"'";          
-   db.query(sql, function(err, result){  
-      res.render('profile.ejs',{data:result});
-   });
-};
-//---------------------------------edit users details after login----------------------------------
-exports.editprofile=function(req,res){
-   var userId = req.session.userId;
-   if(userId == null){
-      res.redirect("/login");
-      return;
-   }
-
-   var sql="SELECT * FROM `felhasznalok` WHERE user_id='"+userId+"'";
-   db.query(sql, function(err, results){
-      res.render('edit_profile.ejs',{data:results});
+   }         
+   db.query("SELECT * FROM `felhasznalok` WHERE user_id = ?", [userId], function(err, result){  
+      res.render('profile.ejs',{data:result , username:username});
    });
 };
 //--------------------------------create new bill--------------------------------------------------
-exports.create=function(req, res) {
-	if(req.method == "POST"){
-      message = '';
-      var post = req.body;
-      var nev;
-      var kelte;
-      var sorszam = req.sorszam;
-      var szallitonev = req.szallitonev;
-      var szallitocim = req.szallitocim;
-      var szallitoadoszam = req.szallitoadoszam;
-      var szallitoszamlaszam = req.szallitoszamlaszam;
-      var vevonev = req.vevonev;
-      var vevocim = req.vevocim;
-      var vevoadoszam = req.vevoadoszam;
-      var vevoszamlaszam = req.vevoszamlaszam;
-      var fizmod = req.fizmod;
-      var teljdatum = req.teljdatum;
-      var keltedatum = req.keltedatum;
-      var esedekesseg = req.esedekesseg;
-      
-   } else {
-      res.render('create');
+exports.create=function(req, res, next) {
+   message = '';
+   b_ar = '';
+   b_afa = '';
+   b_afaertek = '';
+   b_brutto = '';
+   var user =  req.session.user;
+   if (user === undefined) {
+      res.redirect("/login");
    }
+   var userId = req.session.user.user_id;
+   var username = req.session.user.username;
+   if(userId == null){
+      res.redirect("/login");
+      return;
+   }
+   db.query("SELECT * FROM felhasznalok WHERE user_id = ?", [userId], function(err, result) {
+	if(req.method == "POST") {
+      var post = req.body;
+      var nev = post.nev;
+      var kelte = new Date();
+      var dd = kelte.getDate();
+      var mm = kelte.getMonth()+1;
+      var yyyy = kelte.getFullYear();
+      if(dd<10) {
+          dd = '0'+dd;
+      }
+      if(mm<10) {
+         mm = '0'+mm;
+      } 
+      kelte = yyyy + '/' + mm + '/' + dd;
+      var sorszam = post.sorszam;
+      var szamla_nev = post.szamla_nev;
+      var szallito_nev = post.szallito_nev;
+      var szallito_cim = post.szallito_cim;
+      var szallito_adoszam = post.szallito_adoszam;
+      var szallito_szamlaszam = post.szallito_szamlaszam;
+      var vevo_nev = post.vevo_nev;
+      var vevo_cim = post.vevo_cim;
+      var vevo_adoszam = post.vevo_adoszam;
+      var vevo_szamlaszam = post.vevo_szamlaszam;
+      var fiz_mod = post.fiz_mod;
+      var telj_datum = post.telj_datum;
+      var kelte_datum = post.kelte_datum;
+      var esedekesseg = post.esedekesseg;
+      var megnevezes = post.megnevezes;
+      var mennyiseg = post.mennyiseg;
+      var ar = post.ar;
+      var afa = post.afa;
+      var afaertek = post.afaertek;
+      var brutto = post.brutto;
+      db.query("INSERT INTO szamlak (sorszam, szamla_nev, szallito_nev, szallito_cim, szallito_adoszam, szallito_szamlaszam, vevo_nev, vevo_cim, vevo_adoszam, vevo_szamlaszam, fiz_mod, telj_datum, kelte_datum, esedekesseg, megnevezes, mennyiseg, ar, afa, afaertek, brutto) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [sorszam, szamla_nev, szallito_nev, szallito_cim, szallito_adoszam, szallito_szamlaszam, vevo_nev, vevo_cim, vevo_adoszam, vevo_szamlaszam, fiz_mod, telj_datum, kelte_datum, esedekesseg, megnevezes, mennyiseg, ar, afa, afaertek, brutto], function (err, results) {
+         if (err) throw err;
+         db.query("SELECT * FROM szamlak WHERE szamla_nev = ? AND sorszam = ?", [szamla_nev, sorszam], function(err, results) {
+            if (err) throw err;
+            var szamlaID = results[0].szamla_id;
+            var sorszam = results[0].sorszam;
+            var kelte = results[0].kelte;
+            console.log(szamlaID);
+         db.query("INSERT INTO user_szamla_kapcs (user_id, szamla_id) VALUES (?, ?)", [userId, szamlaID], function(err, results) {
+            if (err) throw err;
+         console.log("Új számlafelvitel! Főbb adatok:\nID: " + szamlaID + "\nSorszám: " + sorszam + "\nKelte: " + kelte);
+         message = "Sikeres számlafelvitel!";
+         b_ar = ar;
+         b_afa = afa;
+         b_afaertek = afaertek;
+         b_brutto = brutto;
+         res.render('create.ejs', {message: message, user: user, username: username, b_ar: b_ar, b_afa: b_afa, b_afaertek: b_afaertek, b_brutto: b_brutto});
+      });
+      });
+      });
+   } else {
+      res.render('create.ejs');
+   }
+});
 };
