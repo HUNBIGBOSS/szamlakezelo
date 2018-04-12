@@ -1,10 +1,21 @@
    <%- include header %>
    <!-- Main component for a primary marketing message or call to action -->
-      <div class="jumbotron">
-        <h1>Welcome</h1>
-        <p>Hello Dashboard</p>
-        <p>
-          <a class="btn btn-lg btn-primary" href="/home/create" role="button">Profile view »</a>
-        </p>
-      </div>
+        <% if (message.length > 0) { %>
+  <div class="alert alert-info col-sm-12"><%= message %></div>
+                                <% } if (message.length == 0) { %>
+  <div class="col-xl-12" id="fo" style="border: 2px solid black; border-radius: 15px 15px 0px 0px;">
+    <div class="row">
+      <div class="col-xl-4" style="text-align: center; border: 1px solid black; border-radius: 15px 0px 0px 0px;"><h2>Számla neve</h2></div>
+      <div class="col-xl-4" style="text-align: center; border: 1px solid black;"><h2>Kelte</h2></div>
+      <div class="col-xl-4" style="text-align: center; border: 1px solid black; border-radius: 0px 15px 0px 0px;"><h2>Esedékesség</h2></div>
+    </div>
+    <% for(var i = 0; i <data.length; i++) { %>
+    <div class="row">
+   <div class="col-xl-4" style="border: 1px solid black; font-size: 25px; padding-top: 10px;"><%= data[i]['szamla_nev'] %></div>
+   <div class="col-xl-4"  style="border: 1px solid black; font-size: 20px;"><%= data[i]['kelte'] %></div>
+   <div class="col-xl-4"  style="border: 1px solid black; font-size: 20px;"><%= data[i]['esedekesseg'] %></div>
+ </div>
+<% } %>
+  </div>
+        <% } %>
     <%- include footer %>

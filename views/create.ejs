@@ -1,124 +1,171 @@
    <%- include header %>
    <!-- Main component for a primary marketing message or call to action -->
   <% if (message.length > 0) { %>
-          <div class="alert alert-success col-sm-12"><%= message %></div>
+          <div class="alert alert-success col-xl-12"><%= message %></div>
   <% } %>
   <form id = "createform" role = "form" action="/create" method="post" accept-charset="utf-8" onSubmit="return checkblank(this);">
-<!--      <div class="container col-xl-8" id="szamla"> -->
       <div class="col-xl-12" style="border: 1px solid black;">
-        <div class="row align-items-center" id="fejlec" style="border: 1px solid black;">
+        <hr style="border-top: 2px solid black; margin: 0; margin-top: 10px;">
+        <div class="row align-items-center" id="fejlec" style="height: 45px;">
           <div class="col-xl-8"><h2><b>Számla</b></h2></div>
-          <div class="col-xl-2">Sorszám</div>
-          <div class="col-xl-2"><input type="text" name="sorszam" placeholder="Sorszám" size="6" required></div>
+          <div class="col-xl-2" style="text-align: right;">Sorszám</div>
+          <div class="col-xl-2" style="text-align: right;"><input type="text" name="sorszam" placeholder="Sorszám" size="6" required></div>
         </div>
-        <div class="row" style="border: 1px solid black;">
-          <div class="col-xl-6">
-            <h3><b>Szállító</b></h3>
-              <label><b>Név:</b></label><input type="text" name="szallito_nev" placeholder="Szállító neve" required><br>
-              <label><b>Cím:</b></label><input type="text" name="szallito_cim" placeholder="Szállító címe" required><br>
-              <label><b>Adószám:</b></label><input type="text" name="szallito_adoszam" placeholder="Szállító adószáma" required><br>
-              <label><b>Bankszámlaszám:</b></label><input type="text" name="szallito_szamlaszam" placeholder="Szállító bankszámlaszáma" required><br>
+        <hr style="border-top: 2px solid black; margin: 0;">
+
+        <div class="row" id="szallvevadatok">
+
+          <div class="col-xl-5">
+            <div class="row"><div class="col"><h4><b><u>Szállító</u></b></h4></div></div>
+
+            <dir class="row">
+
+              <div class="col-xl-6">
+                <label><b>Név:</b></label><br>
+                <label><b>Cím:</b></label><br>
+                <label><b>Adószám:</b></label><br>
+                <label><b>Bankszámlaszám:</b></label>
+              </div>
+
+              <div class="col-xl-6">
+                <input type="text" name="szallito_nev" placeholder="Szállító neve" required style="margin-bottom: .5rem; height: 24px;"><br>
+                <input type="text" name="szallito_cim" placeholder="Szállító címe" required style="margin-bottom: .5rem; height: 24px;"><br>
+                <input type="text" name="szallito_adoszam" placeholder="Szállító adószáma" required style="margin-bottom: .5rem; height: 24px;" class="szuro ado"><br>
+                <input type="text" name="szallito_szamlaszam" placeholder="Szállító bankszámlaszáma" required style="margin-bottom: .5rem; height: 24px;" class="szuro bank">
+              </div>
+
+            </dir>
           </div>
-          <div class="col-xl-6">
-            <h3><b>Vevő</b></h3>
-              <label><b>Név:</b></label><input type="text" name="vevo_nev" placeholder="Vevő neve" required><br>
-              <label><b>Cím:</b></label><input type="text" name="vevo_cim" placeholder="Vevő címe" required><br>
-              <label><b>Adószám:</b></label><input type="text" name="vevo_adoszam" placeholder="Vevő adószáma" required><br>
-              <label><b>Bankszámlaszám:</b></label><input type="text" name="vevo_szamlaszam" placeholder="Vevő bankszámlaszáma" required><br>
-          </div>
+
+          <div class="col-xl-1" style="border-right: 3px solid black;"></div>
+          <!-- <div class="col" style="border-left: 1px solid black;"></div> -->
+
+          <div class="col-xl-5">
+            <div class="row"><div class="col"><h4><b><u>Vevő</u></b></h4></div></div>
+
+            <div class="row" style="padding: 15px; padding-left: 40px;">
+
+              <div class="col-xl-6">
+                <label><b>Név:</b></label><br>
+                <label><b>Cím:</b></label><br>
+                <label><b>Adószám:</b></label><br>
+                <label><b>Bankszámlaszám:</b></label>
+              </div>
+
+              <div class="col-xl-6">
+                <input type="text" name="vevo_nev" placeholder="Vevő neve" required style="margin-bottom: .5rem; height: 24px;"><br>
+                <input type="text" name="vevo_cim" placeholder="Vevő címe" required style="margin-bottom: .5rem; height: 24px;"><br>
+                <input type="text" name="vevo_adoszam" placeholder="Vevő adószáma" required style="margin-bottom: .5rem; height: 24px;" class="szuro ado"><br>
+                <input type="text" name="vevo_szamlaszam" placeholder="Vevő bankszámlaszáma" required style="margin-bottom: .5rem; height: 24px;" class="szuro bank">
+              </div>
+
+            </div>
         </div>
-        <div class="row align-items-center" style="border: 1px solid black;">
-          <div class="col-xl-3">
+      <div class="col-xl-1"></div>
+      </div>
+        <hr style="border-top: 2px solid black; margin: 0; margin-bottom: 10px;">
+        <div class="row align-items-center" style="height: 60px;">
+          <div class="col-xl-3" style="text-align: center;">
             <label><b>Fizetési mód</b></label><br>
             <select name="fiz_mod">
               <option value="atutalas">Átutalás</option>
               <option value="keszpenz">Készpénz</option>
             </select>
           </div>
-          <div class="col-xl-3">
+          <div class="col-xl-3" style="text-align: center;">
             <label><b>Teljesítés dátuma</b></label><br>
             <input type="date" name="telj_datum" required>
           </div>
-          <div class="col-xl-3">
+          <div class="col-xl-3" style="text-align: center;">
             <label><b>Számla kelte</b></label><br>
             <input type="date" name="kelte_datum" required>
           </div>
-          <div class="col-xl-3">
+          <div class="col-xl-3" style="text-align: center;">
             <label><b>Esedékesség</b></label><br>
             <input type="date" name="esedekesseg" required>
           </div>
         </div>
-        <div class="row align-items-center" style="border: 1px solid black;">
-          <div class="col-xl-2">
+        <hr style="border-top: 2px solid black;">
+        <div class="row align-items-center" style="height: 60px;">
+          <div class="col-xl-2" style="text-align: center;">
             <label><b>Megnevezés</b></label><br>
             <input type="text" name="megnevezes" style="width: 110px" required>
           </div>
-          <div class="col-xl-2">
+
+          <div class="col-xl-2" style="text-align: center;">
             <label><b>Mennyiség</b></label><br>
-            <input type="text" name="mennyiseg" style="width: 110px" id="szuro" required>
+            <input type="text" name="mennyiseg" style="width: 110px" class="szuro" required>
           </div>
-          <div class="col-xl-2">
+          <div class="col-xl-2" style="text-align: center;">
             <label><b>Egységár</b></label><br>
-            <input type="text" name="ar" style="width: 110px" id="szuro" required> Ft
+            <input type="text" name="ar" style="width: 110px" class="szuro" required> Ft
           </div>
-          <div class="col-xl-2">
+          <div class="col-xl-2" style="text-align: center;">
             <label><b>Nettó Áfa %</b></label><br>
-            <input type="text" name="afa" style="width: 110px" id="szuro" required> %
+            <input type="text" name="afa" style="width: 110px" class="szuro" required> %
           </div>
-          <div class="col-xl-2">
+          <div class="col-xl-2" style="text-align: center;">
             <label><b>Áfaérték</b></label><br>
-            <input type="text" name="afaertek" style="width: 110px" id="szuro" required> Ft
+            <input type="text" name="afaertek" style="width: 110px" class="szuro" required> Ft
           </div>
-          <div class="col-xl-2">
+          <div class="col-xl-2" style="text-align: center;">
             <label><b>Bruttó</b></label><br>
-            <input type="text" name="brutto" style="width: 110px" id="szuro" required> Ft
+            <input type="text" name="brutto" style="width: 110px" class="szuro" required> Ft
           </div>
         </div>
-        <div class="row align-items-center" style="border: 1px solid black;">
+        <hr style="border-top: 2px solid black;">
+        <div class="row align-items-center">
           <div class="col-xl-4">
             
           </div>
-          <div class="col-xl-2">
+          <div class="col-xl-2" style="text-align: center;">
             <label><b>Egységár</b></label>
           </div>
-          <div class="col-xl-2">
+          <div class="col-xl-2" style="text-align: center;">
             <label><b>Nettó Áfa %</b></label>
           </div>
-          <div class="col-xl-2">
+          <div class="col-xl-2" style="text-align: center;">
             <label><b>Áfaérték</b></label>
           </div>
-          <div class="col-xl-2">
+          <div class="col-xl-2" style="text-align: center;">
             <label><b>Bruttó</b></label>
           </div>
         </div>
-        <div class="row align-items-center" style="border: 1px solid black;">
-          <div class="col-xl-4">
+        <div class="row align-items-center" style="height: 90px;">
+          <div class="col-xl-4" style="text-align: right;">
             <label><b>Összesen</b></label>
           </div>
-          <div class="col-xl-2">
-            <b><% if (b_ar.length > 0) { %>
+          <div class="col-xl-2" style="text-align: center;">
+            <b>
+            <% if (b_ar.length > 0) { %>
           <%= b_ar %>
-          <% } %></b>
+          <% } %>
+            </b>
           </div>
-          <div class="col-xl-2">
-            <b><% if (b_afa.length > 0) { %>
-          <div<%= b_afa %>
-          <% } %></b>
+          <div class="col-xl-2" style="text-align: center;">
+            <b>
+            <% if (b_afa.length > 0) { %>
+          <%= b_afa %>
+          <% } %>
+          </b>
           </div>
-          <div class="col-xl-2">
-            <b><% if (b_afaertek.length > 0) { %>
+          <div class="col-xl-2" style="text-align: center;">
+            <b>
+            <% if (b_afaertek.length > 0) { %>
           <%= b_afaertek %>
-          <% } %></b>
+          <% } %>
+          </b>
           </div>
-          <div class="col-xl-2">
-            <b><% if (b_brutto.length > 0) { %>
+          <div class="col-xl-2" style="text-align: center;">
+            <b>
+            <% if (b_brutto.length > 0) { %>
           <%= b_brutto %>
-          <% } %></b>
+          <% } %>
+          </b>
           </div>
         </div>
       </div>
-      <!--</div> -->
-      <p><input type="text" placeholder="Számla neve" name="szamla_nev"></p>
+      <p style="margin: 10px;"><input type="text" placeholder="Számla neve" name="szamla_nev"></p>
       <p><button type="submit" class="btn btn-success">Számla elfogadása és felvitele</button></p>
   </form>
     <%- include footer %>

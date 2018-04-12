@@ -52,7 +52,6 @@ exports.login = function(req, res){
       var pass= post.password;
       db.query("SELECT user_id, email, username, password FROM felhasznalok WHERE username = ? AND password = ?", [name, pass], function(err, results){      
          if(results.length){
-            req.session.userId = results[0].user_id;
             req.session.user = results[0];
             console.log("A(z) " + results[0].user_id + ". ID-vel rendelkező felhasználó bejelentkezett!");
             res.redirect('/home/dashboard');
@@ -70,26 +69,37 @@ exports.login = function(req, res){
 //-----------------------------------------------dashboard page functionality----------------------------------------------
  
 exports.dashboard = function(req, res, next){
+   message = '';
+   szamlaneve = '';
+   kelte = '';
+   esedek = '';
    var user =  req.session.user;
    if (user === undefined) {
       res.redirect("/login");
+      return;
    }
    var userId = req.session.user.user_id;
    var username = req.session.user.username;
-   db.query("SELECT * FROM felhasznalok WHERE user_id = ?", [userId], function(err, results) {
-	if (userId == null || userId == undefined) {
-	res.redirect("/login");
-	} else {
-	if (err) throw err;
-	res.render('dashboard.ejs', {user:user, username:username});
-	};
- });
+   db.query("SELECT `szamlak`.* FROM `felhasznalok` INNER JOIN `user_szamla_kapcs` ON `user_szamla_kapcs`.`user_id` = `felhasznalok`.`user_id` INNER JOIN `szamlak` ON `user_szamla_kapcs`.`szamla_id` = `szamlak`.`szamla_id` WHERE (`felhasznalok`.`user_id` = ?)", [userId], function(err, results) {
+      if (err) throw err;
+      if (results.length == 0) {
+         message = "Önnek még nincsenek felvitt számlái!";
+         res.render('dashboard.ejs', {user:user, username:username, message:message});
+         return;
+      } else {
+         szamlaneve = 'Számla neve';
+         kelte = 'Kelte';
+         esedek = 'Esedékesség';
+         res.render('dashboard.ejs', {user:user, username:username, message:message, data:results, szamlaneve:szamlaneve, kelte:kelte, esedek:esedek});
+     }
+   });
 };
 //------------------------------------logout functionality----------------------------------------------
 exports.logout=function(req, res){
    var user = req.session.user;
    if (user === undefined) {
       res.redirect("/login");
+      return;
    }
    var logoutId = req.session.user.user_id;
    console.log("A(z) " + logoutId + ". ID-vel rendelkező felhasználó kijelentkezett!");
@@ -99,19 +109,35 @@ exports.logout=function(req, res){
 };
 //--------------------------------modify user details after login--------------------------------
 exports.profile = function(req, res, next){
+   message = '';
    var user =  req.session.user;
    if (user === undefined) {
       res.redirect("/login");
+      return;
    }
    var userId = req.session.user.user_id;
    var username = req.session.user.username;
-   if(userId == null){
+
+   if(req.method == "POST") {
+      if (user === undefined) {
       res.redirect("/login");
       return;
-   }         
-   db.query("SELECT * FROM `felhasznalok` WHERE user_id = ?", [userId], function(err, result){  
-      res.render('profile.ejs',{data:result , username:username});
+   }
+   var post = req.body;
+   var veznev = post.veznev;
+   var kernev = post.kernev;
+   db.query("SELECT * FROM felhasznalok WHERE user_id = ?", [userId], function(err, result){
+      if (err) throw err;
+         db.query("UPDATE felhasznalok SET veznev = ?, kernev = ? WHERE user_id = ?", [veznev, kernev, userId], function(err) {
+            if (err) throw err;
+            message = "A felhasználói adatok frissültek!"
+            console.log("A(z) " + userId + ". ID-vel rendelkező felhasználó adatai megváltoztak!");
+         })
+      res.render('profile.ejs',{user:user, username:username, message:message});
    });
+} else {
+   res.render('profile.ejs',{user:user, message:message, username:username});
+   }
 };
 //--------------------------------create new bill--------------------------------------------------
 exports.create=function(req, res, next) {
@@ -123,15 +149,16 @@ exports.create=function(req, res, next) {
    var user =  req.session.user;
    if (user === undefined) {
       res.redirect("/login");
+      return;
    }
    var userId = req.session.user.user_id;
    var username = req.session.user.username;
-   if(userId == null){
+   db.query("SELECT * FROM felhasznalok WHERE user_id = ?", [userId], function(err, result) {
+	if(req.method == "POST") {
+      if (user === undefined) {
       res.redirect("/login");
       return;
    }
-   db.query("SELECT * FROM felhasznalok WHERE user_id = ?", [userId], function(err, result) {
-	if(req.method == "POST") {
       var post = req.body;
       var nev = post.nev;
       var kelte = new Date();
@@ -172,20 +199,23 @@ exports.create=function(req, res, next) {
             var szamlaID = results[0].szamla_id;
             var sorszam = results[0].sorszam;
             var kelte = results[0].kelte;
-            console.log(szamlaID);
          db.query("INSERT INTO user_szamla_kapcs (user_id, szamla_id) VALUES (?, ?)", [userId, szamlaID], function(err, results) {
             if (err) throw err;
          console.log("Új számlafelvitel! Főbb adatok:\nID: " + szamlaID + "\nSorszám: " + sorszam + "\nKelte: " + kelte);
          message = "Sikeres számlafelvitel!";
-         b_ar = ar;
-         b_afa = afa;
-         b_afaertek = afaertek;
-         b_brutto = brutto;
+         b_ar = ar + " Ft";
+         b_afa = afa + "%";
+         b_afaertek = afaertek + " Ft";
+         b_brutto = brutto + " Ft";
          res.render('create.ejs', {message: message, user: user, username: username, b_ar: b_ar, b_afa: b_afa, b_afaertek: b_afaertek, b_brutto: b_brutto});
       });
       });
       });
    } else {
+      if (userId === undefined) {
+         res.redirect("/login");
+         return;
+      }
       res.render('create.ejs');
    }
 });

@@ -28,12 +28,12 @@ app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '/public')));
 app.use(session({
               secret: 'Teszt Elek',
               resave: false,
               saveUninitialized: true,
-              cookie: { maxAge: 600000 }
+              cookie: { maxAge: 1200000 }
             }))
  
 //elérési útvonalak
@@ -46,7 +46,7 @@ app.post('/login', user.login);//call for login post
 app.get('/home/dashboard', user.dashboard);//call for dashboard page after login
 app.get('/home/logout', user.logout);//call for logout
 app.get('/home/profile', user.profile);//to render users profile
-app.post('/home/profile', user.profile);
+app.post('/profile', user.profile);
 app.get('/home/create', user.create);
 app.post('/create', user.create);
 //Middleware

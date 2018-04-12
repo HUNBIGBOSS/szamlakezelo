@@ -1,11 +1,14 @@
    <%- include header %>
    <!-- Main component for a primary marketing message or call to action -->
+   <% if (message.length > 0) { %>
+          <div class="alert alert-success col-sm-12"><%= message %></div>
+  <% } %>
       <div class="jumbotron">
         <h3>Felhasználói adatok</h3>
-        <form id="profileform" role="form" action="/profile" method="post">
+        <form id="profileform" role="form" action="/profile" method="post" accept-charset="utf-8">
           <div class="row">
-        <input type="text" name="veznev" id="veznev" placeholder="Vezetéknév">
-        <input type="text" name="kernev" id="kernev" placeholder="Keresztnév">
+        <input type="text" name="veznev" id="veznev" placeholder="Vezetéknév" style="width: 150px; margin: 10px;">
+        <input type="text" name="kernev" id="kernev" placeholder="Keresztnév" style="width: 150px; margin: 10px;">
           </div>
         <button id="btn-submit" type="submit" class="btn btn-success">Változtatások mentése</button>
         </form>
